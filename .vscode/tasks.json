@@ -1,0 +1,80 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "Compile server",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"--std=c++20",
+				"-pthread",
+				"-o",
+				"server",
+				"${workspaceRoot}/${input:serverSrc}",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "cppbuild",
+			"label": "Compile client",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"--std=c++20",
+				"-pthread",
+				"-o",
+				"client",
+				"${workspaceRoot}/${input:clientSrc}",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Compile server and client",
+            "dependsOn": ["Compile server", "Compile client"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	],
+	"inputs": [
+		{
+			"type": "pickString",
+			"id": "serverSrc",
+			"description": "What will be the server?",
+			"options": [
+				"ipc_shared_memory_server.cpp",
+			],
+			"default": "ipc_shared_memory_server.cpp"
+		},
+		{
+			"type": "pickString",
+			"id": "clientSrc",
+			"description": "What will be the client?",
+			"options": [
+				"ipc_shared_memory_client.cpp",
+			],
+			"default": "ipc_shared_memory_client.cpp"
+		}
+	]
+}
