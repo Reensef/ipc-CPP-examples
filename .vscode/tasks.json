@@ -3,15 +3,15 @@
 	"tasks": [
 		{
 			"type": "cppbuild",
-			"label": "Compile server",
+			"label": "Compile IPC shared memory message driven",
 			"command": "/usr/bin/g++",
 			"args": [
 				"-fdiagnostics-color=always",
 				"--std=c++20",
 				"-pthread",
 				"-o",
-				"server",
-				"${workspaceRoot}/${input:serverSrc}",
+				"${workspaceRoot}/bin/ipcSharedMemoryMessageDriven",
+				"${workspaceRoot}/ipc_shared_memory/message_driven.cpp",
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -26,15 +26,15 @@
 		},
 		{
 			"type": "cppbuild",
-			"label": "Compile client",
+			"label": "Compile IPC named pipe P2P one process",
 			"command": "/usr/bin/g++",
 			"args": [
 				"-fdiagnostics-color=always",
 				"--std=c++20",
 				"-pthread",
 				"-o",
-				"client",
-				"${workspaceRoot}/${input:clientSrc}",
+				"${workspaceRoot}/bin/ipcNamedPipeP2POne",
+				"${workspaceRoot}/ipc_named_pipes/p2p_first.cpp",
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -48,33 +48,27 @@
 			}
 		},
 		{
-			"type": "shell",
-			"label": "Compile server and client",
-            "dependsOn": ["Compile server", "Compile client"],
+			"type": "cppbuild",
+			"label": "Compile IPC named pipe P2P second process",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"--std=c++20",
+				"-pthread",
+				"-o",
+				"${workspaceRoot}/bin/ipcNamedPipeP2PSecond",
+				"${workspaceRoot}/ipc_named_pipes/p2p_second.cpp",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			}
 		}
 	],
-	"inputs": [
-		{
-			"type": "pickString",
-			"id": "serverSrc",
-			"description": "What will be the server?",
-			"options": [
-				"ipc_shared_memory_server.cpp",
-			],
-			"default": "ipc_shared_memory_server.cpp"
-		},
-		{
-			"type": "pickString",
-			"id": "clientSrc",
-			"description": "What will be the client?",
-			"options": [
-				"ipc_shared_memory_client.cpp",
-			],
-			"default": "ipc_shared_memory_client.cpp"
-		}
-	]
 }
