@@ -26,14 +26,14 @@
 		},
 		{
 			"type": "cppbuild",
-			"label": "Compile IPC named pipe P2P one process",
+			"label": "Compile IPC named pipe P2P first process",
 			"command": "/usr/bin/g++",
 			"args": [
 				"-fdiagnostics-color=always",
 				"--std=c++20",
 				"-pthread",
 				"-o",
-				"${workspaceRoot}/bin/ipcNamedPipeP2POne",
+				"${workspaceRoot}/bin/ipcNamedPipeP2PFirst",
 				"${workspaceRoot}/ipc_named_pipes/p2p_first.cpp",
 			],
 			"options": {
@@ -58,6 +58,75 @@
 				"-o",
 				"${workspaceRoot}/bin/ipcNamedPipeP2PSecond",
 				"${workspaceRoot}/ipc_named_pipes/p2p_second.cpp",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "cppbuild",
+			"label": "Compile IPC noname pipe example",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"--std=c++20",
+				"-pthread",
+				"-o",
+				"${workspaceRoot}/bin/ipcNonamePipes",
+				"${workspaceRoot}/ipc_noname_pipes/example.cpp",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "cppbuild",
+			"label": "Compile IPC message queue P2P first process",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"--std=c++20",
+				"-pthread",
+				"-o",
+				"${workspaceRoot}/bin/ipcMessageQueueP2PFirst",
+				"${workspaceRoot}/ipc_message_queue/p2p_first.cpp",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "cppbuild",
+			"label": "Compile IPC message queue P2P second process",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"--std=c++20",
+				"-pthread",
+				"-o",
+				"${workspaceRoot}/bin/ipcMessageQueueP2PSecond",
+				"${workspaceRoot}/ipc_message_queue/p2p_second.cpp",
 			],
 			"options": {
 				"cwd": "${fileDirname}"

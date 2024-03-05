@@ -2,7 +2,7 @@
 #include <error.h>
 #include <fcntl.h>
 #include <sys/ipc.h>
-#include <sys/shm.h>
+#include <sys/msg.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/sem.h>
@@ -22,8 +22,14 @@
 
 struct ThreadParams
 {
-    char *namePipeOne;
-    char *namePipeTwo;
+    const int msgNameFirst;
+    const int msgNameSecond;
+};
+
+struct Message
+{
+    long mtype;
+    char mtext[1000];
 };
 
 void *read(void *threadParams)
@@ -32,19 +38,12 @@ void *read(void *threadParams)
 
     while (true)
     {
-        char data[1000];
+        pid_t pid = getpid();
+        Message msg;
 
-        int id = open(params->namePipeTwo, O_RDONLY);
+        msgrcv(params->msgNameFirst, &msg, sizeof(msg.mtext), 1, 0);
 
-        if (id == -1)
-        {
-            std::cout << "Error open pipe" << std::endl;
-        }
-
-        read(id, data, 1000);
-        close(id);
-
-        std::cout << "Recived message: " << data << std::endl;
+        std::cout << "From " << pid << ": " << msg.mtext << " with type " << msg.mtype << std::endl;
     }
 }
 
@@ -58,31 +57,50 @@ void *write(void *threadParams)
         char inputString[1000];
         std::cin >> inputString;
 
-        int id = open(params->namePipeOne, O_WRONLY);
+        Message msg;
+        msg.mtype = 1;
+        strcpy(msg.mtext, inputString);
 
-        if (id == -1)
-        {
-            std::cout << "Error open pipe" << std::endl;
-        }
-
-        write(id, inputString, 1000);
-
-        close(id);
+        msgsnd(params->msgNameSecond, &msg, sizeof(msg.mtext), 0);
     }
 }
 
 int main(int argc, char **argv)
 {
-    char namePipeOne[] = "/tmp/fifo.1";
-    char namePipeTwo[] = "/tmp/fifo.2";
+    char msgNameFirst[] = "/tmp/messageQueue.1";
+    char msgNameSecond[] = "/tmp/messageQueue.2";
 
-    mkfifo(namePipeOne, PERMISSION_MODE);
-    mkfifo(namePipeTwo, PERMISSION_MODE);
+    std::ofstream file(msgNameFirst);
+    if (file.is_open())
+    {
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Error creation message queue file. Try reinstalling the application." << std::endl;
+        return 1;
+    }
+    std::ofstream file2(msgNameSecond);
+    if (file2.is_open())
+    {
+        file2.close();
+    }
+    else
+    {
+        std::cerr << "Error creation message queue file. Try reinstalling the application." << std::endl;
+        return 1;
+    }
+
+    key_t msgKeyFirst = ftok(msgNameFirst, 'R');
+    int msgIdFirst = msgget(msgKeyFirst, 0666 | IPC_CREAT);
+
+    key_t msgKeySecond = ftok(msgNameSecond, 'R');
+    int msgIdSecond = msgget(msgKeySecond, 0666 | IPC_CREAT);
 
     std::cout << "You are ready to receive and send messages:" << std::endl;
     std::cout << "Messages must be no more than 1000 characters long" << std::endl;
 
-    ThreadParams *threadParam = new ThreadParams{namePipeOne, namePipeTwo};
+    ThreadParams *threadParam = new ThreadParams{msgIdFirst, msgIdSecond};
     pthread_t writeThread, readThread;
 
     if (pthread_create(&readThread, NULL, read, (void *)threadParam) != 0)
@@ -100,8 +118,8 @@ int main(int argc, char **argv)
     pthread_join(readThread, NULL);
     pthread_join(writeThread, NULL);
 
-    unlink(namePipeOne);
-    unlink(namePipeTwo);
+    msgctl(msgIdFirst, IPC_RMID, NULL);
+    msgctl(msgIdSecond, IPC_RMID, NULL);
 
     return 0;
 }

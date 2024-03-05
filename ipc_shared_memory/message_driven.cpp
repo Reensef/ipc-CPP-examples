@@ -118,7 +118,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    int oflag = PERMISSION_MODE | IPC_CREAT;
+    int oflag = PERMISSION_MODE | IPC_CREAT; // or 0666 | IPC_CREAT
 
     key_t semKey = ftok(sharedFileName, 'S');
     int semId = semget(semKey, 1, 0666 | IPC_CREAT);
@@ -129,10 +129,10 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    key_t segReadKey = ftok(sharedFileName, 'R');
-    int segReadId = shmget(segReadKey, 1007, oflag);
+    key_t segKey = ftok(sharedFileName, 'R');
+    int segId = shmget(segKey, 1007, oflag);
 
-    if (segReadId == -1)
+    if (segId == -1)
     {
         std::cout << "Error accessing shared memory segment" << std::endl;
         return 1;
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
     std::cout << "You are ready to receive and send messages" << std::endl;
     std::cout << "Messages must be no more than 1000 characters long" << std::endl;
 
-    ThreadParams *threadParam = new ThreadParams{semId, segReadId};
+    ThreadParams *threadParam = new ThreadParams{semId, segId};
     pthread_t writeThread, readThread;
 
     if (pthread_create(&readThread, NULL, read, (void *)threadParam) != 0)
@@ -158,6 +158,9 @@ int main(int argc, char **argv)
 
     pthread_join(readThread, NULL);
     pthread_join(writeThread, NULL);
+
+    shmctl(segId, IPC_RMID, NULL);
+    semctl(semId, 0, IPC_RMID);
 
     return 0;
 }
