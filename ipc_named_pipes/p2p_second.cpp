@@ -1,22 +1,21 @@
-#include <stdio.h>
 #include <error.h>
 #include <fcntl.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <sys/ipc.h>
 #include <sys/sem.h>
-#include <fcntl.h>
-#include <sys/types.h>
+#include <sys/shm.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#include <iostream>
-#include <string>
 #include <cstring>
 #include <fstream>
+#include <iostream>
+#include <string>
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 #define PERMISSION_MODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
@@ -99,8 +98,8 @@ int main(int argc, char **argv)
     pthread_join(readThread, NULL);
     pthread_join(writeThread, NULL);
 
-    // semctl(semId, 0, IPC_RMID, NULL);
-    // unlink(argv[1]);
+    unlink(namePipeOne);
+    unlink(namePipeTwo);
 
     return 0;
 }

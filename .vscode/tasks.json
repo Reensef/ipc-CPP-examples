@@ -10,8 +10,8 @@
 				"--std=c++20",
 				"-pthread",
 				"-o",
-				"${workspaceRoot}/bin/ipcSharedMemoryMessageDriven",
-				"${workspaceRoot}/ipc_shared_memory/message_driven.cpp",
+				"${workspaceRoot}/bin/ipcSharedMemoryPublishSubscribe",
+				"${workspaceRoot}/ipc_shared_memory/publish_subscribe.cpp",
 			],
 			"options": {
 				"cwd": "${fileDirname}"
