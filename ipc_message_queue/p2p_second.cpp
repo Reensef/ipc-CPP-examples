@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     int msgIdSecond = msgget(msgKeySecond, 0666 | IPC_CREAT);
 
     std::cout << "You are ready to receive and send messages:" << std::endl;
-    std::cout << "Messages must be no more than 1000 characters long" << std::endl;
+    std::cout << "Messages must be no more than 1000 characters long. For spaces use '_'." << std::endl;
 
     ThreadParams *threadParam = new ThreadParams{msgIdFirst, msgIdSecond};
     pthread_t writeThread, readThread;
